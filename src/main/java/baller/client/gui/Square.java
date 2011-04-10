@@ -15,6 +15,10 @@ public class Square {
         position = new Point(50, 50);
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setPosition(Point pos) {
         position.setLocation(pos);
     }

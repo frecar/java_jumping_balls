@@ -1,31 +1,30 @@
 package baller.client.net;
 
 import java.awt.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import baller.client.gui.*;
 
-public class PositionPuller {
+public class PositionPuller implements Runnable{
 
-    List<Square> squares;
+    private final Map<Integer, Point> positions;
+    private BufferedReader input;
 
-    public PositionPuller() {
-        squares = new ArrayList<Square>();
-        Square s1 = new Square(1);
-        Square s2 = new Square(2);
-        squares.add(s1);
-        squares.add(s2);
+
+    public PositionPuller(BufferedReader input) {
+        positions = new HashMap<Integer, Point>();
+        this.input = input;
+
     }
-
-    public List<Square> getSquares() {
-        return squares;
-    }
-
 
     public Point getSquarePosition(Square square) {
-        Point pos = square.getPosition();
-        pos.x = pos.x + 10;
-        return pos;
+        return positions.get(square.getId());
+    }
+
+    @Override
+    public void run() {
+
     }
 }
