@@ -18,7 +18,7 @@ public class PositionPuller {
         squares.add(s2);
     }
 
-    public List<Square> getSquars() {
+    public List<Square> getSquares() {
         return squares;
     }
 

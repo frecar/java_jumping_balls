@@ -6,8 +6,6 @@ import java.awt.*;
 
 public class PositionPusher {
 
-
-
     public void updateSquare(Square square, Point newPos) {
 
 

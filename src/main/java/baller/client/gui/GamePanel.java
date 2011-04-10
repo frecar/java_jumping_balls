@@ -37,11 +37,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.positionPuller = positionPuller;
         gameThread = new Thread(this);
         this.squares = new ArrayList<Square>(squares);
-        log.info(squares.toString());
 
         setPreferredSize(new Dimension(panelWidth, panelHeight));
 
         setUpKeyListener();
+        running = false;
     }
 
     private void setUpKeyListener() {
@@ -97,8 +97,6 @@ public class GamePanel extends JPanel implements Runnable {
             square.setPosition(pos);
         }
 
-        log.info("updating");
-
     }
 
     private void gameRender() {
@@ -112,16 +110,12 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-        bufferGraphics.setColor(Color.lightGray);
+        bufferGraphics.setColor(Color.white);
         bufferGraphics.fillRect(0, 0, panelWidth, panelHeight);
 
-
-        log.info(squares.toString());
         for (Square square : squares) {
             square.paintSquare(bufferGraphics);
         }
-
-        log.info("gameRender");
 
     }
 
@@ -129,11 +123,9 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics g = this.getGraphics();
         if(g != null && bufferImage != null) {
             g.drawImage(bufferImage, 0, 0, null);
-            g.drawString("TEST", 100, 100);
         }
         Toolkit.getDefaultToolkit().sync();
 
-        log.info("paintScreen");
     }
 
 }
