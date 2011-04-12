@@ -105,7 +105,7 @@ public class Network {
 
     private void setUpPushSocket() throws IOException {
         pushSocket = new Socket(hostAdr, pushPort);
-        pusher = new PrintWriter(pushSocket.getOutputStream());
+        pusher = new PrintWriter(pushSocket.getOutputStream(), true);
     }
 
 
