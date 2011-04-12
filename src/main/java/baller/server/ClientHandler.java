@@ -2,6 +2,7 @@ package baller.server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class ClientHandler implements Runnable {
@@ -9,16 +10,12 @@ public class ClientHandler implements Runnable {
     private static Logger log = Logger.getLogger(ClientHandler.class.getName());
 
     private Server server;
-    private Socket clientSocket;
     private PrintWriter out;
-    private BufferedReader in;
     private int clientId;
 
     public ClientHandler(Server server, Socket client) throws IOException {
-
         this.server = server;
         out = new PrintWriter(client.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         clientId = server.getNextID();
     }
 
@@ -34,19 +31,35 @@ public class ClientHandler implements Runnable {
     public void run() {
 
         out.println("starting");
+        writeIds();
         while (true) {
             writePositions();
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 log.info(e.toString());
+                return;
             }
         }
 
     }
 
+    private void writeIds() {
+        StringBuilder ids = new StringBuilder();
+        Iterator<Integer> iterator = server.getClientIds().iterator();
+        while (iterator.hasNext()) {
+            ids.append(iterator.next());
+            if (iterator.hasNext()) ids.append(":");
+        }
+
+        log.info("writing ids: " + ids);
+        out.println(ids);
+    }
+
     private void writePositions() {
         String allPositions = server.getPositions();
+    //    log.info("writing position update: " + allPositions);
         out.println(allPositions);
     }
 }

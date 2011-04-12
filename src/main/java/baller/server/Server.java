@@ -3,9 +3,7 @@ package baller.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -40,7 +38,7 @@ class Server {
         nextID = 1;
         ServerSocket serverSocket = new ServerSocket(port);
         gameStarted = false;
-        while (!gameStarted) {
+        while (!gameStarted && nextID <= 2) {
             Socket clientSocket = serverSocket.accept();
             log.info("New connection:" + clientSocket);
             ClientHandler clientHandler = new ClientHandler(this, clientSocket);
@@ -63,6 +61,7 @@ class Server {
     }
 
     public synchronized int getNextID() {
+        clientPositions.put(nextID,  "50:50");
         return nextID++;
     }
 
@@ -72,13 +71,22 @@ class Server {
 
     public String getPositions() {
         StringBuilder res = new StringBuilder();
-        for(Map.Entry pos : clientPositions.entrySet()) {
-            res.append(pos.getKey());
+        Iterator<Map.Entry<Integer, String>> iterator = clientPositions.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, String> posEntry = iterator.next();
+            res.append(posEntry.getKey());
             res.append(":");
-            res.append(pos.getValue());
-            res.append("|");
+            res.append(posEntry.getValue());
+            if (iterator.hasNext())
+                res.append("|");
         }
+
         return res.toString();
+
+    }
+
+    public Set<Integer> getClientIds() {
+        return clientPositions.keySet();
     }
 
 
@@ -105,6 +113,7 @@ class Server {
 
             } catch (IOException e) {
                 // ?
+                log.info(e.toString());
             }
         }
     }

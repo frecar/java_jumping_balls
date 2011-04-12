@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.logging.Logger;
 
-public class UpdateListener implements Runnable
-{
+public class UpdateListener implements Runnable {
+
+    private static final Logger log = Logger.getLogger(UpdateListener.class.getName());
 
     private Server server;
     private BufferedReader in;
@@ -24,6 +26,7 @@ public class UpdateListener implements Runnable
 
     @Override
     public void run() {
+        isRunning = true;
         while (isRunning) {
             try {
                 String position = in.readLine();
@@ -38,9 +41,13 @@ public class UpdateListener implements Runnable
         if (position.equals("start")) {
             server.stopListening();
         }
-        String[] parts = position.split(":", 2);
-        int clientId = Integer.parseInt(parts[0]);
-        server.setClientPosition(clientId, parts[1]);
+
+        else {
+            log.info("read update: " + position);
+            String[] parts = position.split(":", 2);
+            int clientId = Integer.parseInt(parts[0]);
+            server.setClientPosition(clientId, parts[1]);
+        }
     }
 
 }

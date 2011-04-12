@@ -7,7 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,21 +21,20 @@ public class GamePanel extends JPanel implements Runnable {
     private Graphics bufferGraphics;
 
 
-    private boolean running;
-    private static final int sleepTime = 1000;
+    private volatile boolean running;
+    private static final int sleepTime = 40;
     private final Thread gameThread;
 
-    private final List<Square> squares;
-    private Square userSquare;
+    private volatile List<Square> squares;
+    private volatile Square userSquare;
 
     private final PositionPuller positionPuller;
     private final PositionPusher positionPusher;
 
-    public GamePanel(PositionPuller positionPuller, PositionPusher positionPusher, List<Square> squares) {
+    public GamePanel(PositionPuller positionPuller, PositionPusher positionPusher) {
         this.positionPusher = positionPusher;
         this.positionPuller = positionPuller;
         gameThread = new Thread(this);
-        this.squares = new ArrayList<Square>(squares);
 
         setPreferredSize(new Dimension(panelWidth, panelHeight));
 
@@ -53,28 +51,44 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
-    private void handleKeyPress() {
+    public void handleKeyPress() {
+        if (!running) {
+            return;
+        }
+
         Point pos = userSquare.getPosition();
-        Point newPos = new Point(pos.x+1, pos.y);
+        Point newPos = new Point(pos.x+5, pos.y);
         positionPusher.updateSquare(userSquare, newPos);
     }
 
-    public void setUserSquare(Square square) {
-        this.userSquare = square;
+    public void setSquares(List<Square> squares) {
+        this.squares = squares;
+    }
+
+    public void setUserSquare(int squareId) {
+        for(Square square : squares) {
+            if (square.getId() == squareId ) {
+                this.userSquare = square;
+                return;
+            }
+        }
     }
 
     public void addNotify() {
+        log.info("GamePanel added, starting up");
         startUp();
         super.addNotify();
     }
 
     private void startUp() {
         gameThread.start();
+        requestFocus();
     }
 
     public void run() {
 
         running = true;
+        new Thread(positionPuller).start();
         while (running) {
             gameUpdate();
             gameRender();

@@ -4,19 +4,21 @@ import baller.client.gui.Square;
 
 import java.awt.*;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 public class PositionPusher {
 
-    private final int clientId;
+    private static final Logger log = Logger.getLogger(PositionPusher.class.getName());
+
     private final PrintWriter writer;
 
-    public PositionPusher(int clientId, PrintWriter writer) {
-        this.clientId = clientId;
+    public PositionPusher(PrintWriter writer) {
         this.writer = writer;
     }
 
     public void updateSquare(Square square, Point newPos) {
         String update = constructUpdateString(square, newPos);
+        log.info("writing update: " + update);
         writer.println(update);
     }
 
@@ -24,7 +26,6 @@ public class PositionPusher {
         String res = "" + square.getId();
         res += ":" + pos.getX();
         res += ":" + pos.getY();
-        res += "|";
         return res;
     }
 }
